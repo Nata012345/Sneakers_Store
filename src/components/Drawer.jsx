@@ -1,53 +1,35 @@
 import React from "react";
 
-function Drawer() {
+function Drawer({ onClose, items=[] }) {
     return (
-        <div style={{display: 'none'}} className="overlay ">
+        <div className="overlay ">
             <div className="drawer d-flex flex-column">
                 <h2
                     className="d-flex justify-between">Basket
                     <img className="removeBtn cu-p"
                          src="/images/btn-remove.svg"
-                         alt="Remove button"/>
+                         alt="Remove button"
+                         onClick={onClose}
+                    />
                 </h2>
 
                 <div className="items">
-                    <div className="cartItem d-flex align-center">
-                        <div
-                            style={{backgroundImage: 'url(/images/sneakers/image%201.jpg)'}}
-                            className="cartItemImg">
-                        </div>
-                        <div>
-                            <p className="mb-5">Nike Blazer Mid Suede</p>
-                            <span>Price: </span>
-                            <b>213$</b>
-                        </div>
-                        <img className="removeBtn" src="/images/btn-remove.svg" alt="Remove button"/>
-                    </div>
-                    <div className="cartItem d-flex align-center">
-                        <div
-                            style={{backgroundImage: 'url(/images/sneakers/image%201.jpg)'}}
-                            className="cartItemImg">
-                        </div>
-                        <div>
-                            <p className="mb-5">Nike Blazer Mid Suede</p>
-                            <span>Price: </span>
-                            <b>213$</b>
-                        </div>
-                        <img className="removeBtn" src="/images/btn-remove.svg" alt="Remove button"/>
-                    </div>
-                    <div className="cartItem d-flex align-center">
-                        <div
-                            style={{backgroundImage: 'url(/images/sneakers/image%201.jpg)'}}
-                            className="cartItemImg">
-                        </div>
-                        <div>
-                            <p className="mb-5">Nike Blazer Mid Suede</p>
-                            <span>Price: </span>
-                            <b>213$</b>
-                        </div>
-                        <img className="removeBtn" src="/images/btn-remove.svg" alt="Remove button"/>
-                    </div>
+                    {
+                        items.map((sneaker) => (
+                            <div className="cartItem d-flex align-center justify-between">
+                                <div
+                                    style={{ backgroundImage: `url(${sneaker.imgUrl})` }}
+                                    className="cartItemImg">
+                                </div>
+                                <div>
+                                <p className="mb-5">{sneaker.title}</p>
+                                    <span>Price: </span>
+                                    <b>{sneaker.price} $</b>
+                                </div>
+                                <img className="removeBtn" src="/images/btn-remove.svg" alt="Remove button"/>
+                            </div>
+                        ))
+                    }
                 </div>
 
                 <div className="totalInfo d-flex flex-column">
