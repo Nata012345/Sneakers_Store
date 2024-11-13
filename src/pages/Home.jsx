@@ -1,25 +1,27 @@
 import Card from "../components/Card";
 import React from "react";
 
-function Home({ items,
+function Home({
+                  items,
                   searchValue,
                   setSearchValue,
                   onChangeSearchInput,
                   onAddToFavorite,
-                  onAddToCart
-}) {
+                  onAddToCart,
+                  onRemoveItem,
+              }) {
     return <section className="content p-40">
         <div className="d-flex justify-between align-center mb-40">
             <h1>All SNEAKERS</h1>
             <div className="searchBlock d-flex align-center">
-                <img width={14} height={14} src="/images/search.svg" alt="Search" />
-                <input onChange={onChangeSearchInput} value={searchValue} placeholder="Search..." />
+                <img width={14} height={14} src="/images/search.svg" alt="Search"/>
+                <input onChange={onChangeSearchInput} value={searchValue} placeholder="Search..."/>
                 {searchValue &&
                     <img
                         onClick={() => setSearchValue('')}
                         className="clear cu-p"
                         src="/images/btn-remove.svg"
-                        alt="Clear" />}
+                        alt="Clear"/>}
             </div>
         </div>
 
@@ -33,12 +35,20 @@ function Home({ items,
                         title={item.title}
                         price={item.price}
                         imgUrl={item.imgUrl}
-                        onFavoritePlus={onAddToFavorite}
+
+                        isFavofite = {item.isFavofite}
+                        isCart = {item.isCart}
+
+                        onRemoveCartPlus={onRemoveItem}
+                        onFavorite={onAddToFavorite}
+                        // onFavoritePlus={onAddToFavorite}
                         onCartPlus={(obj) => onAddToCart(obj)}
+
                     />
                 ))}
         </div>
     </section>
 }
+
 export default Home;
 

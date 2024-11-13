@@ -1,6 +1,10 @@
 import React from "react";
 
 function Drawer({ onClose, items=[], onRemove }) {
+    const handleRemoveClick = (sneaker) => {
+        onRemove(sneaker);
+        // sneaker.isCart = false;
+    }
     return (
         <div className="overlay ">
             <div className="drawer d-flex flex-column">
@@ -16,7 +20,7 @@ function Drawer({ onClose, items=[], onRemove }) {
                         <div className="items">
                             {
                                 items.map((sneaker) => (
-                                    <div className="cartItem d-flex align-center justify-between">
+                                    <div key={sneaker.firestoreKey} className="cartItem d-flex align-center justify-between">
                                         <div
                                             style={{backgroundImage: `url(${sneaker.imgUrl})`}}
                                             className="cartItemImg">
@@ -26,8 +30,13 @@ function Drawer({ onClose, items=[], onRemove }) {
                                             <span>Price: </span>
                                             <b>{sneaker.price} $</b>
                                         </div>
-                                        <img onClick={() => onRemove(sneaker.id)} className="removeBtn"
-                                             src="/images/btn-remove.svg" alt="Remove button"/>
+                                        <img
+                                            // onClick={() => onRemove(sneaker)}
+                                            // sneaker.isCart = false
+                                            onClick={() => handleRemoveClick(sneaker)}
+                                            className="removeBtn"
+                                            src="/images/btn-remove.svg"
+                                            alt="Remove button"/>
                                     </div>
                                 ))
                             }
@@ -35,12 +44,12 @@ function Drawer({ onClose, items=[], onRemove }) {
 
                         <div className="totalInfo d-flex flex-column">
                             <ul className="total d-flex flex-column">
-                                <li className="d-flex">
+                                <li key="1" className="d-flex">
                                     <span>Total:</span>
                                     <div></div>
                                     <span>30 $</span>
                                 </li>
-                                <li className="d-flex">
+                                <li key="2" className="d-flex">
                                     <span>Tax 7%:</span>
                                     <div></div>
                                     <span>2 $</span>
