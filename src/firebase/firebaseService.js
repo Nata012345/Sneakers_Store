@@ -30,21 +30,21 @@ const addSneakerToCart = async (sneaker) => {
             price: sneaker.price,
             imgUrl: sneaker.imgUrl,
         });
-        console.log("Sneaker added to cart", docRef);
+        console.log("Sneaker added to backcart", docRef);
         return {...sneaker, firestoreKey: docRef._key.path.lastSegment()}
     } catch (err) {
-        console.error("Error adding Sneaker to cart:", err);
+        console.error("Error adding Sneaker to backcart:", err);
     }
 };
 
 const removeItemFromCart = async (sneakerItemIn) => {
-    console.log(sneakerItemIn);
+    // console.log(sneakerItemIn);
     try {
         const sneakerItem = doc(db, "cart", sneakerItemIn.firestoreKey);
         await deleteDoc(sneakerItem);
-        console.log("removing succesully:", sneakerItem);
+        console.log("Sneaker is removed from backcart", sneakerItem);
     } catch (err) {
-        console.error("Error removing Sneaker from favorites:", err);
+        console.error("Error removing Sneaker from backfavorites:", err);
     }
 }
 const getFavoritesSneakers = async (sneakers) => {
@@ -67,19 +67,19 @@ const addSneakerToFavorite = async (sneaker) => {
             price: sneaker.price,
             imgUrl: sneaker.imgUrl,
         });
-        console.log("Sneaker added to favorite", docRef);
+        console.log("Sneaker added to backfavorite", docRef);
         return {...sneaker, firestoreKey: docRef._key.path.lastSegment()};
     } catch (err) {
-        console.error("Error adding Sneaker to favorite:", err);
+        console.error("Error adding Sneaker to backfavorite:", err);
     }
 };
 const removeFromFavorites = async (sneaker) => {
     try {
         const sneakerItem = doc(db, "favorites", sneaker.firestoreKey);
         await deleteDoc(sneakerItem);
-        console.log("removing succesully:", sneakerItem);
+        console.log("Sneaker is removed from backfavorite", sneakerItem);
     } catch (err) {
-        console.error("Error removing Sneaker from favorites:", err);
+        console.error("Error removing Sneaker from backfavorites:", err);
     }
 }
 
