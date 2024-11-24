@@ -14,7 +14,7 @@ const Nofavorites = ({ image, title, description }) => {
             <h3>{title}</h3>
             <p className="opacity-6">{description}</p>
             <button className="greenButton" onClick={handleGoBack}>
-                <img src="/images/arrow-total.svg" alt="Arrow back"/> Go back
+                <img src="./images/arrow-total.svg" alt="Arrow back"/> Go back
             </button>
         </div>
     )

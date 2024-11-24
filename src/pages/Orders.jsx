@@ -3,7 +3,6 @@ import { AppContext } from "../App";
 
 import Card from "../components/Card";
 import { fetchUserOrders } from "../firebase/firebaseService";
-import Nofavorites from "../components/Nofavorites";
 import Nooders from "../components/Nooders";
 
 function Orders () {
@@ -30,7 +29,6 @@ function Orders () {
             {
                 (orders && orders.length > 0) ? <h1>My orders</h1> : ""
             }
-            {/*<h1>My orders</h1>*/}
         </div>
         <div className="cards d-flex flex-wrap">
             {
@@ -40,7 +38,7 @@ function Orders () {
                             <Nooders
                                 title="You have no orders"
                                 description={"You didn't create any orders"}
-                                image={"/images/noOdersSmile.png"}
+                                image={"./images/noOdersSmile.png"}
                             />
                         )
                     :
@@ -48,7 +46,6 @@ function Orders () {
                         <Card key={index}
                               {...item}
                               isLoading={isLoading}
-                            // onRemoveCartPlus={(obj) => onRemoveItem(obj)}
                         />
                     ))
             }

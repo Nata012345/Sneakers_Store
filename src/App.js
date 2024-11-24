@@ -138,7 +138,7 @@ function App() {
                 <Drawer items={cartItems} onClose={() => setCartOpened(false)} onRemove={onRemoveItem} opened={cartOpened}/>
                 <Header onClickCart={() => setCartOpened(true)}/>
                 <Routes>
-                    <Route path="/" element = {
+                    <Route path="/Sneakers_Store/" element = {
                         <Home
                             items={items}
                             favorites={favorites}
@@ -152,14 +152,14 @@ function App() {
                             isLoading={isLoading}
                         />
                     }/>
-                    <Route path="/favorites" element = {
+                    <Route path="/Sneakers_Store//favorites" element = {
                         <Favorites
                             onAddToCart={onAddToCart}
                             onRemoveItem={onRemoveItem}
                             isLoading={isLoading}
                         />
                     }/>
-                    <Route path="/orders" element = {
+                    <Route path="/Sneakers_Store//orders" element = {
                         <Orders />
                     }/>
                 </Routes>

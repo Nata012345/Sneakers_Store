@@ -38,13 +38,13 @@ function Home({
         <div className="d-flex justify-between align-center mb-40">
             <h1>All SNEAKERS</h1>
             <div className="searchBlock d-flex align-center">
-                <img width={14} height={14} src="/images/search.svg" alt="Search"/>
+                <img width={14} height={14} src="./images/search.svg" alt="Search"/>
                 <input onChange={onChangeSearchInput} value={searchValue} placeholder="Search..."/>
                 {searchValue &&
                     <img
                         onClick={() => setSearchValue('')}
                         className="clear cu-p"
-                        src="/images/btn-remove.svg"
+                        src="./images/btn-remove.svg"
                         alt="Clear"/>}
             </div>
         </div>
