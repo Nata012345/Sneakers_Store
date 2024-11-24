@@ -6,11 +6,12 @@ import {
     addSneakerToFavorite, getFavoritesSneakers,
     removeFromFavorites
 } from "./firebase/firebaseService";
-
 import Header from './components/Header';
-import Drawer from "./components/Drawer";
 import Home from "./pages/Home";
 import Favorites from "./pages/Favorites";
+import Orders from "./pages/Orders";
+import Drawer from "./components/Drawer";
+const userId = "Natally"
 
 export const AppContext = React.createContext({});
 
@@ -20,73 +21,67 @@ function App() {
     const [cartOpened, setCartOpened] = useState(false);
     const [searchValue, setSearchValue] = useState('');
     const [favorites, setFavorites] = useState([]);
+    const [isFavorite, setIsFavorite] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const loadFavorites = async () => {
-            setIsLoading(true)
-            const favoritesItems = await getFavoritesSneakers();
-            setFavorites(favoritesItems);
-            setIsLoading(false)
-            console.log('loadFavoritesSneakers', favoritesItems)
+            try {
+                setIsLoading(true)
+                const favoritesItems = await getFavoritesSneakers();
+                setFavorites(favoritesItems);
+                setIsLoading(false)
+                console.log('loadFavoritesSneakers', favoritesItems)
+            } catch (err) {
+                console.error("Error of loading Favorites");
+            }
         }
         const loadCartSneakers = async () => {
-            setIsLoading(true);
-            const cartItems = await fetchCartSneakers();
-            setCartItems(cartItems);
-            setIsLoading(false);
-            console.log('loadCartSneakers', cartItems)
+            try {
+                setIsLoading(true);
+                const cartItems = await fetchCartSneakers();
+                setCartItems(cartItems);
+                setIsLoading(false);
+                console.log('loadcartItems', cartItems)
+            } catch (err) {
+                console.error("Error of loading Cart");
+            }
         }
         const loadSneakers = async () => {
-            setIsLoading(true);
-            const loadItems = await fetchSneakers();
-            console.log('loadSneakers items', loadItems)
-            setItems(loadItems.map(item => ({
-                ...item,
-                isFavofite: false,
-                isCart: false}))
-            );
-            setIsLoading(false)
+            try {
+                setIsLoading(true);
+                const loadItems = await fetchSneakers();
+                console.log('loadSneakers items', loadItems)
+                setItems(loadItems.map(item => ({
+                    ...item,
+                    isFavorite: false,
+                    isCart: false}))
+                );
+                setIsLoading(false)
+            } catch (err) {
+                console.error("Error of loading Items");
+            }
         };
         loadFavorites();
         loadCartSneakers();
         loadSneakers();
     }, []);
-
-    const ifInCarts = (item, cartItems) => {
-        for (let element of cartItems) {
-            if(element.id === item.id) {
-                return true
-            }
-        }
-        return false
-    }
-
-    // const loadFavoritesSneakers = async () => {
-    //     const favoritesItems = await getFavoritesSneakers();
-    //     setFavorites(favoritesItems);
-    //     console.log('loadFavoritesSneakers', favoritesItems)
-    // }
-
-    // useEffect(() => {
-    //     const loadCartSneakers = async () => {
-    //         const cartItems = await fetchCartSneakers();
-    //         setCartItems(cartItems);
-    //         console.log('loadCartSneakers', cartItems)
+    // const ifInCarts = (item, cartItems) => {
+    //     for (let element of cartItems) {
+    //         if(element.id === item.id) {
+    //             return true
+    //         }
     //     }
-    //     loadCartSneakers();
-    // }, []);
-    // useEffect(() => {
-    //     loadFavoritesSneakers();
-    // }, []);
-
+    //     return false
+    // }
     const onAddToCart = async (obj) => {
-        console.log("onAddToCart", obj);
         try {
-            const existItem = cartItems.some(item => Number(item.id) === Number(obj.id));
+            const existItem = cartItems.find(item => Number(item.id) === Number(obj.id));
             if (!existItem) {
                 const cartItem = await addSneakerToCart(obj);
+                console.log("Added item to backcart", cartItem)
                 setCartItems(prev => [...prev, cartItem]);
+                // setCartItems(prev => [...prev, cartItem]);
                 // const newItems = items.map(item => {
                 //     if (item.id === obj.id) {
                 //         return obj
@@ -95,15 +90,14 @@ function App() {
                 //     }
                 // })
                 // setItems(newItems)
-            // } else {
-            //     await removeItemFromCart(obj);
-            //     setCartItems(prev => prev.filter(item => Number(item.id) !== Number(obj.id)));
-            //     console.log("cartItems after minus new sneaker", cartItems);
+            } else {
+                setCartItems(prev => prev.filter(item => Number(item.id) !== Number(obj.id)));
+                await removeItemFromCart(obj);
+                console.log("cartItems after minus new sneaker", cartItems);
             }
         } catch (err) {
             console.error("Error adding to cart");
         }
-        console.log("cartItems after plus new sneaker", cartItems);
     }
     const onRemoveItem = async (sneakerItem) => {
         try {
@@ -111,49 +105,43 @@ function App() {
             // if (typeof itemId !== "string") {
             //     throw new Error("ID should be a string");
             // }
-            console.log('onRemoveItem sneakerItem:',sneakerItem)
-            await removeItemFromCart(sneakerItem);
             setCartItems(prev => prev.filter(item => item.firestoreKey !== sneakerItem.firestoreKey));
-            // console.log(`Item with ID ${id} removed successfully.`);
+            await removeItemFromCart(sneakerItem);
         } catch (err) {
             console.error("Error while removing item:", err);
         }
     }
     const onAddToFavorite = async (obj) => {
         try {
-            const existingFavorite = favorites.find(favObj => Number(favObj.id) === Number(obj.id));
-            if (existingFavorite) {
-                await removeFromFavorites(existingFavorite);
-                setFavorites((prev) => prev.filter((item) => Number(item.id) !== Number(obj.id)))
+            const existInFavorite = favorites.find(favObj => Number(favObj.id) === Number(obj.id));
+            if (existInFavorite) {
+                setFavorites((prev) => prev.filter((item) => Number(item.id) !== Number(obj.id)));
+                await removeFromFavorites(obj);
             } else {
                 const newSneaker = await addSneakerToFavorite(obj);
-                setFavorites((prev) => [...prev, newSneaker])
+                setFavorites((prev) => [...prev, newSneaker]);
             }
         } catch (err) {
-            console.log('Failed to add to favorites')
+            console.log('Failed to add to favorites');
         }
     }
     const onChangeSearchInput = (event) => {
-        setSearchValue(event.target.value)
+        setSearchValue(event.target.value);
     }
-
     const isItemAdded = (id) => {
         return cartItems.some((obj) => Number(obj.id) === Number(id));
     }
-
     return (
-         <AppContext.Provider value={{ items, cartItems, favorites, isItemAdded, onAddToFavorite, setCartOpened, setCartItems }}>
+         <AppContext.Provider value={{ userId, items, cartItems, favorites,
+             isItemAdded, isFavorite, onAddToFavorite, setCartOpened, setCartItems }}>
             <div className="wrapper clear">
-                {cartOpened && <Drawer
-                    items={cartItems}
-                    onClose={() => setCartOpened(false)}
-                    onRemove={onRemoveItem}
-                />}
+                <Drawer items={cartItems} onClose={() => setCartOpened(false)} onRemove={onRemoveItem} opened={cartOpened}/>
                 <Header onClickCart={() => setCartOpened(true)}/>
                 <Routes>
                     <Route path="/" element = {
                         <Home
                             items={items}
+                            favorites={favorites}
                             searchValue={searchValue}
                             setSearchValue={setSearchValue}
                             cartItems={cartItems}
@@ -165,7 +153,14 @@ function App() {
                         />
                     }/>
                     <Route path="/favorites" element = {
-                        <Favorites />
+                        <Favorites
+                            onAddToCart={onAddToCart}
+                            onRemoveItem={onRemoveItem}
+                            isLoading={isLoading}
+                        />
+                    }/>
+                    <Route path="/orders" element = {
+                        <Orders />
                     }/>
                 </Routes>
             </div>

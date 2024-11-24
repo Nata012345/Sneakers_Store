@@ -1,22 +1,36 @@
 import React, { useState } from "react";
-import { AppContext } from "../App";
-import Info from "../components/info";
 
-function Drawer({ onClose, items=[], onRemove }) {
-    const { setCartItems } = React.useContext(AppContext);
+import Info from "../info";
+import { addOder, removeCart } from "../../firebase/firebaseService";
+import { useCart } from "../../hooks/useCart";
+
+import styles from "./Drawer.module.scss";
+
+function Drawer({ onClose, items=[], onRemove, opened }) {
+    const { cartItems, setCartItems, totalPrice } = useCart();
+    const [orderId, setOrderId] = useState(null);
     const [isOrderComplete, setIsOrderComplete] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const onClickOrder = () => {
-        setIsOrderComplete(true);
-        setCartItems([]);
+    const onClickOrder = async () => {
+        try {
+            setIsLoading(true);
+            const result = await addOder({cartItems, userId: "Nata"});
+            setOrderId(result.orderObject.orderId || null);
+            setIsOrderComplete(true);
+            setCartItems([]);
+            removeCart();
+        } catch (err) {
+            console.error("Error adding the order to the orderBack:", err);
+        }
+        setIsLoading(false);
     }
-
     const handleRemoveClick = (sneaker) => {
         onRemove(sneaker);
     }
     return (
-        <div className="overlay ">
-            <div className="drawer d-flex flex-column">
+        <div className={`${styles.overlay} ${opened ? styles.overlayVisible : ""}`}>
+            <div className={styles.drawer}>
                 <h2 className="d-flex justify-between">Basket
                     <img className="removeBtn cu-p"
                          src="/images/btn-remove.svg"
@@ -31,9 +45,9 @@ function Drawer({ onClose, items=[], onRemove }) {
                                 items.map((sneaker) => (
                                     <div
                                         key={sneaker.id}
-                                         className="cartItem d-flex align-center justify-between">
+                                        className="cartItem d-flex align-center justify-between">
                                         <div
-                                            style={{ backgroundImage: `url(${sneaker.imgUrl})` }}
+                                            style={{ backgroundImage: `url("${sneaker.imgUrl}")` }}
                                             className="cartItemImg">
                                         </div>
                                         <div>
@@ -55,30 +69,30 @@ function Drawer({ onClose, items=[], onRemove }) {
                                 <li key="1" className="d-flex">
                                     <span>Total:</span>
                                     <div></div>
-                                    <span>30 $</span>
+                                    <span>{totalPrice} $</span>
                                 </li>
                                 <li key="2" className="d-flex">
-                                    <span>Tax 7%:</span>
+                                    <span>Tax 10%:</span>
                                     <div></div>
-                                    <span>2 $</span>
+                                    <span>{(totalPrice / 100 * 10).toFixed(2)} $</span>
                                 </li>
                             </ul>
-                            <button onClick={onClickOrder} className="greenButton">Make your oder
-                                <img src="/images/arrow-total.svg" alt="Arrow" />
+                            <button
+                                onClick={onClickOrder} className="greenButton">Make your oder
+                                <img src="/images/arrow-total.svg" alt="Arrow"/>
                             </button>
                         </div>
                     </> : (
                         <Info
                             title={isOrderComplete ? "Order is completed" : "Empty Cart"}
-                            description={isOrderComplete ? "Your order #18 will be sent to courier delivery soon" : "Please, add at least one sneaker to place an order"}
-                            image={isOrderComplete ? "/images/" : "/images/empty-cart.png"}
+                            description={isOrderComplete ? `Your order #${orderId} will be sent to courier delivery soon.` : "Please, add at least one sneaker to place an order"}
+                            image={isOrderComplete ? "/images/orderComplete.jpg" : "/images/empty-cart.png"}
                         />
-                        )
+                    )
                 }
             </div>
         </div>
     )
 }
-
 export default Drawer;
 

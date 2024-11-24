@@ -1,10 +1,9 @@
 import Card from "../components/Card";
 import React from "react";
 
-
 function Home({
                   items,
-                  cartItems,
+                  favorites,
                   searchValue,
                   setSearchValue,
                   onChangeSearchInput,
@@ -14,20 +13,24 @@ function Home({
                   isLoading,
               }) {
 
-
+    const isItemInFavorites = (obj) => {
+        if (obj) {
+            return favorites.some(favObj => Number(favObj.id) === Number(obj.id));
+        } else {
+            return false;
+        }
+    }
     const renderItems = () => {
         const filteredItems = items.filter((item) => item.title.toLowerCase().includes(searchValue.toLowerCase()));
         return (isLoading ? [...Array(30)] : filteredItems).map((item, index) => (
             <Card
                 key={index}
                 {...item}
-                // added = {isItemAdded(item && item.id)}
                 isLoading={isLoading}
-                // isFavofite = {item.isFavofite}
-                // isCart = {item.isCart}
                 onRemoveCartPlus={(obj) => onRemoveItem(obj)}
                 onFavorite={onAddToFavorite}
                 onCartPlus={(obj) => onAddToCart(obj)}
+                isFavorite={isItemInFavorites(item)}
             />
         ))
     }
